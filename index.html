@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang = "en">
+
+    <head>
+        <title>BookFinder</title>
+        <meta name="description" content="Find out where to get the most profits for your books!">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link href = "styles.css" rel = "stylesheet">
+        <link href = 'https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' rel = 'stylesheet'>
+    </head>
+
+    <body>
+        <div class = "wrapper">
+            <div class = "cell" id = "home">
+                <h1><span><i class="fas fa-book"></i></span> BookFinder</h1>
+                <h3>Find the True Value of Your Books</h3>
+                <form>
+                    <input type = "text" id = "barcode" placeholder = "Enter Barcode">
+                    <div id = "btn-wrapper">
+                        <input type = "submit" id = "submit" value = "Search">
+                    </div>
+                </form>
+            </div>
+
+            <div class = "cell" id = "loading">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                     style="margin: auto; background: transparent; display: block; shape-rendering: auto;"
+                     width="200px" height="200px" viewBox="0 0 100 100"
+                     preserveAspectRatio="xMidYMid">
+                    <circle cx="50" cy="50" fill="none"
+                            stroke="#ffffff" stroke-width="10"
+                            r="35" stroke-dasharray="164.93361431346415 56.97787143782138"
+                            transform="rotate(26.1551 50 50)">
+                        <animateTransform attributeName="transform" type="rotate"
+                                          repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"/>
+                    </circle>
+                </svg>
+                <h3>Loading... Please wait...</h3>
+            </div>
+
+            <div class = "cell" id = "results" style = "padding: 0 80px;">
+                <a href = "./" style = "text-decoration: none; color: white; margin-top: 50px;">
+                    <h1 style = "margin-top: 50px;"><span><i class="fas fa-book"></i></span> BookFinder</h1>
+                    <h3 style = "margin-bottom: 50px;">Find the True Value of Your Books</h3>
+                </a>
+
+                <table id = "price_table" style = "margin-bottom: 120px; width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Site</th>
+                            <th class = "title">Product Title</th>
+                            <th>Offer</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id = "remaining-rows">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+
+    <script
+            src="https://code.jquery.com/jquery-3.5.0.min.js"
+            integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="
+            crossorigin="anonymous">
+    </script>
+
+    <script>
+        $("#submit").click(function(e) {
+            e.preventDefault();
+            let barcode = $("#barcode").val();
+
+            $("#home").animate({opacity: 0}, 400, function() {
+                document.getElementById("home").style.display = "none";
+                document.getElementById("loading").style.opacity = "0";
+                document.getElementById("loading").style.display = "table-cell";
+
+                $("#loading").animate({opacity: 1}, 400, function() {
+                    let request = new XMLHttpRequest();
+                    let url = "http://localhost:5000/get_item?barcode=" + barcode;
+
+                    request.open("GET", url);
+
+                    request.onload = function() {
+                        let parsed = JSON.parse(this.response);
+                        let sites = parsed["sites"];
+
+                        sites.sort(function(a, b) {
+                            return parseFloat(b.offer) - parseFloat(a.offer);
+                        });
+
+                        let remaining_table = "";
+                        for (let i = 0; i < sites.length; i++) {
+                            remaining_table +=
+                                "<tr>" +
+                                "<td>" + sites[i].site + "</td>" +
+                                "<td class = 'title'>" + sites[i].title + "</td>" +
+                                "<td>£ " + parseFloat(sites[i].offer) +"</td>" +
+                                "<td>" +
+                                "<a href = '"+ sites[i].url + "' target = '_blank'>" +
+                                "<img class = 'external' src = 'external_link.png'>" +
+                                "</a>" +
+                                "</td>" +
+                                "</tr>";
+                        }
+
+                        document.getElementById("remaining-rows").innerHTML = remaining_table;
+                        document.getElementById("results").style.opacity = "0";
+                        $("#loading").animate({opacity: 0}, function() {
+                            document.getElementById("loading").style.display = "none";
+                            document.getElementById("results").style.display = "table-cell";
+                            $("#results").animate({opacity: 1}, 400);
+                        });
+                    }
+
+                    request.send();
+                });
+            });
+        });
+    </script>
+
+    <script
+            defer=""
+            src="https://use.fontawesome.com/releases/v5.0.13/js/all.js"
+            integrity="sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe"
+            crossorigin="anonymous">
+    </script>
+
+</html>

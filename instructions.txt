@@ -1,0 +1,35 @@
+These are the instructions for how to host the code on your local server. I will of course help you with uploading the
+final version to a website and you won't have to do any of this. This is for if you are curious as to how the site looks.
+
+Mac:
+1. Make sure you have python installed and can run it from your terminal. Follow an installation tutorial on Youtube for Mac if you have issues.
+
+2. Download the zip file from Fiverr and unzip the files to your Desktop.
+
+3. Open in your terminal and change directories to the project with the following command:
+cd Desktop/maxtrafford
+
+4. Install the requirements for the python file:
+pip install -r requirements.txt
+
+5. Start the flask server:
+python get_prices.py
+
+6. In your finder, click on index.html, and a local version of the site should open in your web browser.
+
+
+Windows:
+1. Make sue you have python installed and can run it from your command prompt. Follow an installation tutorial on Youtube for Windows if you have issues.
+
+2. Download the zip file from Fiverr and unzip the files to your Documents folder.
+
+3. Change directories to the project with the following command:
+cd Documents\maxtrafford
+
+4. Install the requirements for the python file:
+pip install -r requirements.txt
+
+5. Start the flask server:
+python get_prices.py
+
+6. In your file explorer, find and click on index.html, and a local version of the site should open in your web browser.
