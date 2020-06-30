@@ -7,6 +7,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link href = "styles.css" rel = "stylesheet">
         <link href = 'https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' rel = 'stylesheet'>
+        <link rel="stylesheet" type="text/css" media="screen" href="scanner.css">
+        <script src="./scanner_js/vconsole.min.js"></script>
     </head>
 
     <body>
@@ -17,6 +19,9 @@
                 <form>
                     <input type = "text" id = "barcode" placeholder = "Enter Barcode">
                     <div id = "btn-wrapper">
+                        <button type = "submit" id = "scan-icon">
+                            <img src = "barcode.png" style = "height: calc(1rem + 29px)">
+                        </button>
                         <input type = "submit" id = "submit" value = "Search">
                     </div>
                 </form>
@@ -58,74 +63,252 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class = "cell" id = "scanner">
+                <div class="content">
+                    <!-- picker -->
+                    <div class="picker" id="Picker">
+                        <div class="p-frame">
+                            <video class="dbrScanner-video" id="PVideo" playsinline="true" muted="muted"></video>
+                        </div>
+                        <div class="p-frame">
+                            <div id="canvasContainer" class="canvas-container"></div>
+                        </div>
+                    </div>
+
+                    <!-- waiting ui-->
+                    <div class="waiting">
+                        <div class="w-loop-ui">
+                            <div class="circle1">
+                                <div class="loop-sector">
+                                    <div class="sector"></div>
+                                    <div class="sector"></div>
+                                    <div class="sector"></div>
+                                </div>
+                                <div class="circle2"></div>
+                                <div class="line"></div>
+                                <div class="line"></div>
+                                <div class="line"></div>
+                                <div class="line"></div>
+                            </div>
+                        </div>
+                        <div class="w-info1">Accessing Camera list...</div>
+                        <div class="w-info2">Please wait a few seconds. The page is trying to load the camera list. </div>
+                        <div class="w-info3">Please wait a few seconds. </div><div class="w-info3">The page is trying to load the camera list. </div>
+                    </div>
+
+                    <!-- support ui -->
+                    <div class="start" id="notSupport">
+                        <p>Unfortunately, the current browser is not supported.</p>
+                        <p>Please see the supported browser information.</p>
+                        <input type="checkbox" autocomplete="off" id="sptMobile">
+                        <label class="t-title" for="sptMobile">Supported Browsers for Mobile</label>
+                        <table id="tMobile"><tbody>
+                        <tr class="t-body-white">
+                            <td>Chrome for Andriod</td><td>v61+</td>
+                        </tr>
+                        <tr class="t-body-black">
+                            <td>Edge</td><td>Able<a href="https://nokiapoweruser.com/enabling-experimental-features-of-edge-spartan-browser-on-windows-10-mobile-changelog/" target="_blank">*</a></td>
+                        </tr>
+                        <tr class="t-body-white">
+                            <td>Firefox for Android</td><td>v58+</td>
+                        </tr>
+                        <tr class="t-body-black">
+                            <td>Safari</td><td>v11+<a href="https://bugs.webkit.org/show_bug.cgi?id=181781" target="_blank">*</a></td>
+                        </tr>
+                        <tr class="t-body-white">
+                            <td>Andriod Webview</td><td>v61+</td>
+                        </tr>
+                        </tbody></table>
+                        <input type="checkbox" autocomplete="off" id="sptDesktop">
+                        <label class="t-title" for="sptDesktop">Supported Browsers for Desktop</label>
+                        <table id="tDesktop"><tbody>
+                        <tr class="t-body-white">
+                            <td>Chrome</td><td>v61+</td>
+                        </tr>
+                        <tr class="t-body-black">
+                            <td>Edge</td><td>v16+</td>
+                        </tr>
+                        <tr class="t-body-white">
+                            <td>Firefox</td><td>v58+</td>
+                        </tr>
+                        <tr class="t-body-black">
+                            <td>Safari</td><td>v11+<a href="https://bugs.webkit.org/show_bug.cgi?id=181781" target="_blank">*</a></td>
+                        </tr>
+                        <tr class="t-body-white">
+                            <td>Internet Explorer</td><td>No</td>
+                        </tr>
+                        </tbody></table>
+                    </div>
+                    <!-- start ui -->
+                    <div class="start" id="noCam">
+                        <div class="s-info">No camera available</div>
+                    </div>
+
+                    <!-- settings button -->
+                    <input type="checkbox" id="MMenu" style="display:none">
+                    <label class="menu" for="MMenu"></label>
+
+                    <!-- mobile full region button -->
+                    <input type="checkbox" id="MRegion" autocomplete="off">
+                    <label class="m-region" for="MRegion"></label>
+                </div>
+            </div>
         </div>
-    </body>
 
-    <script
-            src="https://code.jquery.com/jquery-3.5.0.min.js"
-            integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="
-            crossorigin="anonymous">
-    </script>
+        <script
+                src="https://code.jquery.com/jquery-3.5.0.min.js"
+                integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="
+                crossorigin="anonymous">
+        </script>
 
-    <script>
-        $("#submit").click(function(e) {
-            e.preventDefault();
-            let barcode = $("#barcode").val();
+        <script
+                defer=""
+                src="https://use.fontawesome.com/releases/v5.0.13/js/all.js"
+                integrity="sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe"
+                crossorigin="anonymous">
+        </script>
 
-            $("#home").animate({opacity: 0}, 400, function() {
-                document.getElementById("home").style.display = "none";
-                document.getElementById("loading").style.opacity = "0";
-                document.getElementById("loading").style.display = "table-cell";
+        <script type="text/javascript">
+            var detectArrowFunc = ()=>{};
+        </script>
 
-                $("#loading").animate({opacity: 1}, 400, function() {
-                    let request = new XMLHttpRequest();
-                    let url = "http://localhost:5000/get_item?barcode=" + barcode;
+        <script>
+            $("#submit").click(function(e) {
+                e.preventDefault();
+                let barcode = $("#barcode").val();
 
-                    request.open("GET", url);
+                $("#home").animate({opacity: 0}, 400, function() {
+                    document.getElementById("home").style.display = "none";
+                    document.getElementById("loading").style.opacity = "0";
+                    document.getElementById("loading").style.display = "table-cell";
 
-                    request.onload = function() {
-                        let parsed = JSON.parse(this.response);
-                        let sites = parsed["sites"];
+                    $("#loading").animate({opacity: 1}, 400, function() {
+                        let request = new XMLHttpRequest();
+                        let url = "http://localhost:5000/get_item?barcode=" + barcode;
 
-                        sites.sort(function(a, b) {
-                            return parseFloat(b.offer) - parseFloat(a.offer);
-                        });
+                        request.open("GET", url);
 
-                        let remaining_table = "";
-                        for (let i = 0; i < sites.length; i++) {
-                            remaining_table +=
-                                "<tr>" +
-                                "<td>" + sites[i].site + "</td>" +
-                                "<td class = 'title'>" + sites[i].title + "</td>" +
-                                "<td>£ " + parseFloat(sites[i].offer) +"</td>" +
-                                "<td>" +
-                                "<a href = '"+ sites[i].url + "' target = '_blank'>" +
-                                "<img class = 'external' src = 'external_link.png'>" +
-                                "</a>" +
-                                "</td>" +
-                                "</tr>";
+                        request.onload = function() {
+                            let parsed = JSON.parse(this.response);
+                            let sites = parsed["sites"];
+
+                            sites.sort(function(a, b) {
+                                return parseFloat(b.offer) - parseFloat(a.offer);
+                            });
+
+                            let remaining_table = "";
+                            for (let i = 0; i < sites.length; i++) {
+                                remaining_table +=
+                                    "<tr>" +
+                                    "<td>" + sites[i].site + "</td>" +
+                                    "<td class = 'title'>" + sites[i].title + "</td>" +
+                                    "<td>£ " + parseFloat(sites[i].offer) +"</td>" +
+                                    "<td>" +
+                                    "<a href = '"+ sites[i].url + "' target = '_blank'>" +
+                                    "<img class = 'external' src = 'external_link.png'>" +
+                                    "</a>" +
+                                    "</td>" +
+                                    "</tr>";
+                            }
+
+                            document.getElementById("remaining-rows").innerHTML = remaining_table;
+                            document.getElementById("results").style.opacity = "0";
+                            $("#loading").animate({opacity: 0}, function() {
+                                document.getElementById("loading").style.display = "none";
+                                document.getElementById("results").style.display = "table-cell";
+                                $("#results").animate({opacity: 1}, 400);
+                            });
                         }
 
-                        document.getElementById("remaining-rows").innerHTML = remaining_table;
-                        document.getElementById("results").style.opacity = "0";
-                        $("#loading").animate({opacity: 0}, function() {
-                            document.getElementById("loading").style.display = "none";
-                            document.getElementById("results").style.display = "table-cell";
-                            $("#results").animate({opacity: 1}, 400);
-                        });
-                    }
-
-                    request.send();
+                        request.send();
+                    });
                 });
             });
-        });
-    </script>
 
-    <script
-            defer=""
-            src="https://use.fontawesome.com/releases/v5.0.13/js/all.js"
-            integrity="sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe"
-            crossorigin="anonymous">
-    </script>
+            $("#scan-icon").click(function(e) {
+                e.preventDefault();
+                $("#home").animate({opacity: 0}, 400, function() {
+                    document.getElementById("home").style.display = "none";
+                    document.getElementById("scanner").style.opacity = "0";
+                    document.getElementById("scanner").style.display = "table-cell";
+
+                    $("#scanner").animate({opacity: 1}, 400);
+                });
+            });
+        </script>
+
+        <script type="text/javascript">
+            var bPC = !navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i);
+            var bMobileSafari = /Safari/.test(navigator.userAgent) && /iPhone/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+            // var bIE = /MSIE/.test(navigator.userAgent) || /Trident/.test(navigator.userAgent) || /RV/.test(navigator.userAgent);
+            // support mobile
+            $('#sptMobile').change(function(){
+                this.checked?$('#tMobile').show():$('#tMobile').hide()
+            });
+            // support desktop
+            $('#sptDesktop').change(function(){
+                this.checked?$('#tDesktop').show():$('#tDesktop').hide()
+            });
+
+            if(bPC){
+                $('#sptDesktop').prop('checked',true);
+                $('#tDesktop').show();
+            }
+            if(!bPC){
+                $('#sptMobile').prop('checked',true);
+                $('#tMobile').show();
+            }
+            if(!window.detectArrowFunc){
+                // not support arrow func, can't understand script.js
+                $('.waiting').fadeOut(300);
+                $('#notSupport').fadeIn(300);
+            }
+            if (bMobileSafari) {
+                $('body').css('cursor', 'pointer');
+            }
+
+            // vConsole
+            var _tagLink = document.createElement('a');
+            _tagLink.href = 'http://www.dynamsoft.com';
+            _tagLink.target = '_blank';
+            var _longClick = 0, _timeout = 0;
+            $('#vConsoleSwitch').on({
+                touchstart:function(ev){
+                    _longClick = 0;
+                    _timeout = setTimeout(() => {
+                        _longClick = 1;
+                        vConsole.show();
+                    }, 800);
+                },
+                touchmove:function(ev){
+                    clearTimeout(_timeout);
+                    _timeout = 0;
+                },
+                touchend:function(ev){
+                    clearTimeout(_timeout);
+                    if(_timeout !== 0 && _longClick === 0){
+                        _tagLink.click();
+                    }
+                    return false;
+                },
+                click:function(){
+                    clearTimeout(_timeout);
+                    _timeout = setTimeout(function() {
+                        _tagLink.click();
+                    }, 300);
+                },
+                dblclick:function(){
+                    clearTimeout(_timeout);
+                    vConsole.show();
+                }
+            })
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@7.3.0-v2/dist/dbr.js"
+                data-productKeys="t0068NQAAACfbIIlizUfPDDYroh10AGrSj9i0X6LwwGogsdR0BW1G97FDDzAoUVQ6D5nE+QDvpegLZ9Ph3+1d1QEdHOl4Fv4=z">
+        </script>
+        <script src="./scanner_js/script_fresh.js"></script>
+        <script src="./scanner_js/ringBell.js"></script>
+    </body>
 
 </html>

@@ -110,7 +110,7 @@ h3 {
     cursor: pointer;
 }
 
-#loading, #results {
+#loading, #results, #scanner {
     display: none;
 }
 
@@ -141,6 +141,20 @@ h3 {
 
 #remaining-rows tr {
     border-bottom: 2px solid #ffffff;
+}
+
+#scan-icon {
+    margin-top: 20px;
+    background: white;
+    position: absolute;
+    border: 1px solid transparent;
+    cursor: pointer;
+    right: 140px;
+    padding: 0 6px;
+}
+
+#scan-icon:hover {
+    background: white;
 }
 
 @media (max-width: 1000px) {
